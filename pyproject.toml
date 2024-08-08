@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "mshauri"
+version = "0.1.0"
+description = ""
+authors = ["Gichana <gichanamayaka@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^3.0.3"
+flask-migrate = "^4.0.7"
+pandas = "^2.2.2"
+pydantic = {extras = ["dotenv"], version = "^2.8.2"}
+pydantic-settings = "^2.4.0"
+psycopg2-binary = "^2.9.9"
+sqlalchemy-utils = "0.41.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
