@@ -4,8 +4,8 @@ from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from ..config import configs
-from ..mshauri import create_app, db
+from config import configs
+from mshauri import create_app, db
 
 engine = create_engine(configs.POSTGRES_DSN.unicode_string())
 

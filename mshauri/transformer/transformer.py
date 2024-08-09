@@ -1,11 +1,12 @@
 from collections import defaultdict
+from datetime import datetime
 from enum import Enum
 
 import numpy as np
 import pandas as pd
 
-from ..extensions import db
-from ..models import CME, Drill, MentorsChecklist
+from mshauri.extensions import db
+from mshauri.models import CME, Drill, MentorsChecklist
 
 
 class EssentialTopics(Enum):
@@ -64,10 +65,13 @@ def process(
 
         cmes = row[cme_topics_cols_mask].dropna()
         for cme in cmes:
+            completion_date = (
+                datetime.now()
+                if pd.isna(row["mentor_checklist/cme_grp/cme_completion_date"])
+                else row["mentor_checklist/cme_grp/cme_completion_date"]
+            )
             cme_detail = (
-                row[
-                    "mentor_checklist/cme_grp/cme_completion_date"
-                ],  # Static Information
+                completion_date,
                 cme,
                 row["mentor_checklist/mentor/q_county"],  # Static Information
                 row["_submission_time"],
@@ -77,6 +81,7 @@ def process(
                 facility_code,
                 facility_name,
                 row["mentor_checklist/mentor/name"],  # Static Information
+                row["mentor_checklist/success_grp/story_success"],
             )  # None for columns where the information isn't needed at this stage
             cme_topics_details[row._id].append(cme_detail)
 
@@ -85,10 +90,13 @@ def process(
 
         drills = row[drill_topics_cols_mask].dropna()
         for drill in drills:
+            completion_date = (
+                datetime.now()
+                if pd.isna(row["mentor_checklist/cme_grp/cme_completion_date"])
+                else row["mentor_checklist/cme_grp/cme_completion_date"]
+            )
             drill_det = (
-                row[
-                    "mentor_checklist/cme_grp/cme_completion_date"
-                ],  # Static Information
+                completion_date,
                 None,
                 row["mentor_checklist/mentor/q_county"],  # Static Information
                 row["_submission_time"],
@@ -98,6 +106,7 @@ def process(
                 facility_code,
                 facility_name,
                 row["mentor_checklist/mentor/name"],  # Static Information
+                row["mentor_checklist/success_grp/story_success"],
                 None,
             )  # None for columns where the information isn't needed at this stage
             drill_topics_details[row._id].append(drill_det)
@@ -140,22 +149,22 @@ def generate_target_dataframe(
         "facility_code",
         "facility_name",
         "mentor_name",
+        "success_story",
         "id_number_cme",
         "id_number_drill",
         "submission_id",
-        "success_story",
     ]
 
     # Perform "cartesian product" of participants and topics for each observation
     cme_details = [
-        (None, *detail, participant, None, submission_id, None)
+        (None, *detail, participant, None, submission_id)
         for submission_id, details in cme_topics.items()
         for detail in details
         for participant in cme_participants[submission_id]
     ]
 
     drill_details = [
-        (None, *detail, participant, submission_id, None)
+        (None, *detail, participant, submission_id)
         for submission_id, details in drill_topics.items()
         for detail in details
         for participant in drill_participants[submission_id]

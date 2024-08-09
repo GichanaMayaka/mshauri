@@ -2,7 +2,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-from ..mshauri.transformer import generate_target_dataframe, process
+from mshauri.transformer import generate_target_dataframe, process
 
 
 def test_process(test_dataframe):

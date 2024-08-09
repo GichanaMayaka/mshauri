@@ -1,6 +1,10 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from sqlalchemy import func
 
-from ..extensions import db
+from mshauri.extensions import db
+
 from .mixins import CRUDMixin
 
 
@@ -36,6 +40,7 @@ class Drill(db.Model, CRUDMixin):
     )
 
 
+@dataclass(kw_only=True)
 class MentorsChecklist(db.Model, CRUDMixin):
     """Mentors Checklist Model
 
@@ -43,6 +48,25 @@ class MentorsChecklist(db.Model, CRUDMixin):
         db (SQLAlchemy): DB instance
         CRUDMixin (CRUDMixin): CRUD operations mixin
     """
+
+    # For serialisation
+    id: int
+    cme_completion_date: str
+    cme_unique_id: str
+    county: str
+    date_submitted: str
+    drill_unique_id: str
+    essential_cme_topic: str
+    essential_drill_topic: str
+    facility_code: str
+    facility_name: str
+    id_number_cme: str
+    id_number_drill: str
+    mentor_name: str
+    submission_id: str
+    success_story: str
+    cme_topic: Optional[str] = None
+    drill_topic: Optional[str] = None
 
     __tablename__ = "mentors_checklist"
 
@@ -75,8 +99,10 @@ class MentorsChecklist(db.Model, CRUDMixin):
 
     @property
     def drill_topic(self):
-        return self.drill.name
+        """Access relationship"""
+        return None if self.drill is None else self.drill.name
 
     @property
     def cme_topic(self):
-        return self.cme.name
+        """Access relationship"""
+        return None if self.cme is None else self.cme.name

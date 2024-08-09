@@ -1,7 +1,6 @@
-import pytest
 from sqlalchemy import func
 
-from ..mshauri.models import CME, Drill, MentorsChecklist
+from mshauri.models import CME, Drill, MentorsChecklist
 
 
 def test_create_cme_model(client_app):
@@ -71,8 +70,7 @@ def test_mentors_checklist_model(client_app):
     assert checklist_1.cme_unique_id == cme
     assert checklist_1.cme_topic == "test mentors checklist"
 
-    with pytest.raises(AttributeError):
-        assert checklist_1.drill_topic is None
+    assert checklist_1.drill_topic is None
 
     checklist_2 = MentorsChecklist.get_by_id(test_checklist_id_2)
 
@@ -80,5 +78,4 @@ def test_mentors_checklist_model(client_app):
     assert checklist_2.drill_unique_id == drill
     assert checklist_2.drill_topic == "test mentors checklist"
 
-    with pytest.raises(AttributeError):
-        assert checklist_2.cme_topic is None
+    assert checklist_2.cme_topic is None

@@ -6,11 +6,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask
 from pydantic import PostgresDsn
 
-from ..config import configs
-from .commands import create_db, drop_db, drop_tables, data, DATASET
-from .extensions import db, migrate
-from .models import CME, Drill, MentorsChecklist
-from .transformer.transformer import parser
+from config import configs
+from mshauri.commands import create_db, drop_db, drop_tables
+from mshauri.extensions import db, migrate
+from mshauri.models import MentorsChecklist
+from mshauri.transformer import parser
 
 
 def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
@@ -27,8 +27,10 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url.unicode_string()
     app.config["SECRET_KEY"] = configs.SECRET_KEY
 
+    source = "./mshauri/dataset/data.xlsx"  # Path to the dataset
+
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=task, args=[DATASET], trigger="interval", seconds=300)
+    scheduler.add_job(func=task, args=[source, app], trigger="interval", seconds=300)
     scheduler.start()
 
     atexit.register(lambda: scheduler.shutdown(wait=True))
@@ -44,12 +46,16 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
         )
 
     @app.route("/run", methods=["GET"])
-    def process():
-        task(DATASET)
-
+    def process() -> tuple[dict, int]:
         return {
             "message": "Processed Successfully",
         }, HTTPStatus.OK
+
+    @app.route("/checklist", methods=["GET"])
+    def get_checklists() -> tuple[dict, int]:
+        checklists = MentorsChecklist.query.all()
+
+        return {"checklists": checklists}, HTTPStatus.OK
 
     @app.after_request
     def set_headers(response):
@@ -78,19 +84,20 @@ def register_commands(app: Flask) -> None:
     Args:
         app (Flask): Flask Instance
     """
-    for command in [create_db, drop_tables, drop_db, data]:
+    for command in [
+        create_db,
+        drop_tables,
+        drop_db,
+    ]:
         app.cli.command()(command)
 
 
-def task(source: pd.DataFrame) -> pd.DataFrame:
+def task(source: str, app: Flask) -> None:
     """Task that performs the transformation
 
     Returns:
         pd.DataFrame: The resultant dataframe
     """
-    app = create_app()
     with app.app_context():
-        # If executed outside of app context
-        output = parser(source)
-
-        return output
+        df = pd.read_excel(source)
+        parser(df)

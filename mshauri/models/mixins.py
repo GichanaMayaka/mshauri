@@ -1,4 +1,4 @@
-from ..extensions import db
+from mshauri.extensions import db
 
 
 class CRUDMixin:
