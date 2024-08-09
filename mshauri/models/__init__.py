@@ -1,10 +1,10 @@
 from sqlalchemy import func
 
 from ..extensions import db
-from .mixins import CreateReadMixin
+from .mixins import CRUDMixin
 
 
-class CME(db.Model, CreateReadMixin):
+class CME(db.Model, CRUDMixin):
     """CME Model
 
     Args:
@@ -14,12 +14,12 @@ class CME(db.Model, CreateReadMixin):
 
     __tablename__ = "cme"
 
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
 
     mentor_checklist = db.relationship("MentorsChecklist", backref="cme", lazy="joined")
 
 
-class Drill(db.Model, CreateReadMixin):
+class Drill(db.Model, CRUDMixin):
     """Drills Model
 
     Args:
@@ -29,14 +29,14 @@ class Drill(db.Model, CreateReadMixin):
 
     __tablename__ = "drill"
 
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
 
     mentor_checklist = db.relationship(
         "MentorsChecklist", backref="drill", lazy="joined"
     )
 
 
-class MentorsChecklist(db.Model, CreateReadMixin):
+class MentorsChecklist(db.Model, CRUDMixin):
     """Mentors Checklist Model
 
     Args:
@@ -50,7 +50,7 @@ class MentorsChecklist(db.Model, CreateReadMixin):
     cme_unique_id = db.Column(
         db.BigInteger,
         db.ForeignKey("cme.id"),
-        nullable=False,
+        nullable=True,
         index=True,
     )
     county = db.Column(db.String(100), nullable=False)
@@ -60,7 +60,7 @@ class MentorsChecklist(db.Model, CreateReadMixin):
     drill_unique_id = db.Column(
         db.Integer,
         db.ForeignKey("drill.id"),
-        nullable=False,
+        nullable=True,
         index=True,
     )
     essential_cme_topic = db.Column(db.Boolean, nullable=False, default=False)
@@ -74,9 +74,9 @@ class MentorsChecklist(db.Model, CreateReadMixin):
     success_story = db.Column(db.String(100), nullable=True)
 
     @property
-    def drill(self):
+    def drill_topic(self):
         return self.drill.name
 
     @property
-    def cme(self):
+    def cme_topic(self):
         return self.cme.name

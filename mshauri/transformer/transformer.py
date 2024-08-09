@@ -1,6 +1,21 @@
 from collections import defaultdict
+from enum import Enum
 
+import numpy as np
 import pandas as pd
+
+from ..extensions import db
+from ..models import CME, Drill, MentorsChecklist
+
+
+class EssentialTopics(Enum):
+    ESSENTIAL_DRILLS = {
+        "Eclampsia",
+    }
+    ESSENTIAL_CMES = {
+        "Postpartum haemorrhage (PPH)",
+        "Infection prevention",
+    }
 
 
 def process(
@@ -37,8 +52,9 @@ def process(
         facility = (
             row[facility_columns].dropna().values[0]
         )  # Assumption is each observation will occur on/have only one facility associated
-        facility_code = facility.split("_")[0]
-        facility_name = facility.split("_")[1]
+        facility_info = facility.split("_", 1)
+        facility_code = facility_info[0]
+        facility_name = facility_info[1]
 
         cme_participants = row[cme_cols_mask].dropna()
         cme_participants_details[row["_id"]].update(cme_participants)
@@ -53,10 +69,8 @@ def process(
                     "mentor_checklist/cme_grp/cme_completion_date"
                 ],  # Static Information
                 cme,
-                None,
                 row["mentor_checklist/mentor/q_county"],  # Static Information
-                None,
-                None,
+                row["_submission_time"],
                 None,
                 None,
                 None,
@@ -76,11 +90,9 @@ def process(
                     "mentor_checklist/cme_grp/cme_completion_date"
                 ],  # Static Information
                 None,
-                None,
                 row["mentor_checklist/mentor/q_county"],  # Static Information
-                None,
+                row["_submission_time"],
                 drill,
-                None,
                 None,
                 None,
                 facility_code,
@@ -120,11 +132,9 @@ def generate_target_dataframe(
         "id",
         "cme_completion_date",
         "cme_topic",
-        "cme_unique_id",
         "county",
         "date_submitted",
         "drill_topic",
-        "drill_unique_id",
         "essential_cme_topic",
         "essential_drill_topic",
         "facility_code",
@@ -154,3 +164,56 @@ def generate_target_dataframe(
     cme_details.extend(drill_details)
 
     return pd.DataFrame(cme_details, columns=columns)
+
+
+def parser(source: pd.DataFrame) -> pd.DataFrame:
+    """Build the final resulting dataframe
+
+    Args:
+        source (pd.DataFrame): Source dataframe
+
+    Returns:
+        pd.DataFrame: Output processed dataframe
+    """
+    (cme_topics, cme_participants), (drill_topics, drill_participants) = process(source)
+    output = generate_target_dataframe(
+        cme_participants, cme_topics, drill_participants, drill_topics
+    )
+
+    unique_cmes = output.cme_topic.dropna().unique().tolist()
+    unique_drills = output.drill_topic.dropna().unique().tolist()
+
+    for cme in unique_cmes:
+        # Save set of CMEs to db if they don't exist
+        new_cme = CME.get_by_name(cme) or CME.create(name=cme)
+        output["cme_unique_id"] = np.where(
+            output["cme_topic"] == cme, new_cme, output.get("cme_unique_id", np.nan)
+        )
+
+    for drill in unique_drills:
+        # Save set of Drills to db if they don't exist
+        new_drill = Drill.get_by_name(drill) or Drill.create(name=drill)
+        output["drill_unique_id"] = np.where(
+            output["drill_topic"] == drill,
+            new_drill,
+            output.get("drill_unique_id", np.nan),
+        )
+
+    output["essential_drill_topic"] = output.apply(
+        lambda r: (r["drill_topic"] in EssentialTopics.ESSENTIAL_DRILLS.value),
+        axis=1,
+    )
+    output["essential_cme_topic"] = output.apply(
+        lambda r: (r["cme_topic"] in EssentialTopics.ESSENTIAL_CMES.value),
+        axis=1,
+    )
+    output.drop(["cme_topic", "drill_topic", "id"], axis=1, inplace=True)
+
+    output.to_sql(
+        MentorsChecklist.__tablename__,
+        con=db.engine,
+        if_exists="append",
+        index=False,
+    )
+
+    return output
