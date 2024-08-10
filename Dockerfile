@@ -1,5 +1,5 @@
 FROM python:3.10.0
-LABEL authors="Okeyo Mayaka"
+LABEL authors="Okeyo G. Mayaka"
 
 ARG ENV
 
@@ -10,7 +10,7 @@ ENV ENV=${ENV} \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.5.1
+    POETRY_VERSION=1.8.3
 
 # System deps:
 RUN pip install "poetry==$POETRY_VERSION"

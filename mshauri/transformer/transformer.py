@@ -2,15 +2,11 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 
-from flask import Flask
 import numpy as np
 import pandas as pd
 
 from mshauri.extensions import db
 from mshauri.models import CME, Drill, MentorsChecklist
-from mshauri.transformer import parser
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
 
 
 class EssentialTopics(Enum):
@@ -236,25 +232,3 @@ def parser(source: pd.DataFrame) -> pd.DataFrame:
     )
 
     return output
-
-
-def task(source: str, app: Flask) -> None:
-    """Task that performs the transformation"""
-    with app.app_context():
-        df = pd.read_excel(source)
-        parser(df)
-
-
-def create_job(source: str, app: Flask):
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(
-        func=task,
-        args=[source, app],
-        trigger="interval",
-        seconds=300,
-        id="parse_dataset",
-    )
-    scheduler.start()
-
-    atexit.register(lambda: scheduler.shutdown(wait=True))
-    return scheduler

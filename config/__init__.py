@@ -11,8 +11,6 @@ class DevConfigs(BaseSettings):
 
     SECRET_KEY: str
 
-    ALLOWED_ORIGINS: HttpUrl
-
     class Config:
         env_file = ".env"
         env_prefix = "DEV_"

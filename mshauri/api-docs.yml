@@ -20,9 +20,6 @@ paths:
               items:
                 type: object
                 properties:
-                  id:
-                    type: string
-                    description: Checklist ID
                   cme_completion_date:
                     type: string
                     format: date
@@ -52,6 +49,9 @@ paths:
                   facility_name:
                     type: string
                     description: The name of the facility
+                  id:
+                    type: string
+                    description: Checklist ID
                   id_number_cme:
                     type: string
                     description: ID number of the CME participant
