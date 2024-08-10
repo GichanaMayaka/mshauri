@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
-  title: Mentors API
-  description: API to manage mentorships
+  title: Mentors Checklist API
+
 paths:
   /checklists:
     get:
@@ -12,6 +12,7 @@ paths:
         If there are no checklists available, it returns a Not Found message.
       responses:
         200:
+          description: Checklists found
           content:
             application/json:
               schema:
