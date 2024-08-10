@@ -1,6 +1,7 @@
 *.env*
 ~$*.xlsx
 .coverage
+*.ipynb
 
 .vscode/*
 .venv/*

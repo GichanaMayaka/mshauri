@@ -40,7 +40,7 @@ class Drill(db.Model, CRUDMixin):
     )
 
 
-@dataclass(kw_only=True)
+@dataclass
 class MentorsChecklist(db.Model, CRUDMixin):
     """Mentors Checklist Model
 
@@ -100,9 +100,9 @@ class MentorsChecklist(db.Model, CRUDMixin):
     @property
     def drill_topic(self):
         """Access relationship"""
-        return None if self.drill is None else self.drill.name
+        return self.drill and self.drill.name
 
     @property
     def cme_topic(self):
         """Access relationship"""
-        return None if self.cme is None else self.cme.name
+        return self.cme and self.cme.name

@@ -4,6 +4,7 @@ from mshauri.models import CME, Drill, MentorsChecklist
 
 
 def test_create_cme_model(client_app):
+    """Test CME model creation"""
     test_cme_id = CME.create(name="test cme")
 
     # Fetch created record
@@ -12,6 +13,7 @@ def test_create_cme_model(client_app):
 
 
 def test_create_drill_model(client_app):
+    """Test Drill model creation"""
     test_drill_id = Drill.create(name="test drill")
 
     # Fetch created drill record
@@ -20,6 +22,7 @@ def test_create_drill_model(client_app):
 
 
 def test_mentors_checklist_model(client_app):
+    """Test Mentors checklist model creation"""
     cme = CME.create(name="test mentors checklist")
     drill = Drill.create(name="test mentors checklist")
 
