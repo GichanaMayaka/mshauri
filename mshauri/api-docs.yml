@@ -10,7 +10,6 @@ paths:
       description:
         This endpoint retrieves all mentors checklists from the database.
         If there are no checklists available, it returns a Not Found message.
-
       responses:
         200:
           content:
@@ -67,14 +66,14 @@ paths:
                   success_story:
                     type: string
                     description: Activity's success story
-      404:
-        description: No Mentors Checklists records found
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Not Found
+        404:
+          description: No Mentors Checklists records found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Not Found
 
   /schedule:
     post:
