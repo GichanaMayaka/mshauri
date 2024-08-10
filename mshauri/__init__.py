@@ -12,7 +12,7 @@ from pydantic import PostgresDsn
 from config import configs
 from mshauri.commands import create_db, drop_db, drop_tables
 from mshauri.extensions import db, migrate
-from mshauri.models import CME, Drill, MentorsChecklist
+from mshauri.models import MentorsChecklist, CME, Drill
 from mshauri.transformer.transformer import parser
 
 SOURCE = "./mshauri/dataset/data.xlsx"  # Path to the dataset
@@ -32,7 +32,7 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url.unicode_string()
     app.config["SECRET_KEY"] = configs.SECRET_KEY
 
-    Swagger(app, template_file="./api-docs.yml")
+    swag = Swagger(app, template_file="./api-docs.yml")
 
     register_extensions(app)
     register_commands(app)
@@ -58,7 +58,7 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
 
     @app.route("/checklists", methods=["GET"])
     def get_checklists() -> tuple[dict, int]:
-        checklists = MentorsChecklist.query.all()
+        checklists = MentorsChecklist.query.limit(500).all()
 
         if checklists:
             return {"checklists": checklists}, HTTPStatus.OK
@@ -104,16 +104,6 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
             }, HTTPStatus.BAD_REQUEST
 
         return {"message": message}, HTTPStatus.OK
-
-    @app.after_request
-    def set_headers(response):
-        if "apidocs" in request.url:
-            response.headers["Content-Type"] = "text/html"
-
-        else:
-            response.headers["Content-Type"] = "application/json"
-
-        return response
 
     return app
 
