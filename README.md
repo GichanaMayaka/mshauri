@@ -2,7 +2,7 @@
 
 This project processes CME and Drill information, provided as an excel document, to generate information about peer coaching and mentorship. The purpose of this API is to transform the data provided into a structured format suitable for database storage and further analyses.
 
-The application is deployed and hosted at [Render](https://mshauri.onrender.com/.checklists). API documentation can be accessed at the [apidocs](https://mshauri.onrender.com/apidocs) endpoint.
+The application is deployed and hosted at [Render](https://mshauri.onrender.com/checklists). API documentation can be accessed at the [apidocs](https://mshauri.onrender.com/apidocs) endpoint.
 
 **NOTE**: The app is hosted on Render's free tier so it may be scaled down when you access it. Please give it some time to lauch when accessing.
 
