@@ -1,0 +1,139 @@
+swagger: "2.0"
+info:
+  title: Mentors API
+  description: API to manage mentorships
+paths:
+  /checklists:
+    get:
+      tags:
+      summary: Retrieve all mentors checklists
+      description:
+        This endpoint retrieves all mentors checklists from the database.
+        If there are no checklists available, it returns a Not Found message.
+
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Checklist ID
+                  cme_completion_date:
+                    type: string
+                    format: date
+                    description: CME completion Date
+                  cme_unique_id:
+                    type: string
+                    description: Id of CME
+                  county:
+                    type: string
+                    description: County where activity occurred
+                  date_submitted:
+                    type: string
+                    format: date
+                    description: Date of submission
+                  drill_unique_id:
+                    type: string
+                    description: Id of Drill
+                  essential_cme_topic:
+                    type: boolean
+                    description: Whether CME was marked as essential
+                  essential_drill_topic:
+                    type: boolean
+                    description: Whether Drill was marked as essential
+                  facility_code:
+                    type: string
+                    description: The code for the facility
+                  facility_name:
+                    type: string
+                    description: The name of the facility
+                  id_number_cme:
+                    type: string
+                    description: ID number of the CME participant
+                  id_number_drill:
+                    type: string
+                    description: ID number of the Drill participant
+                  mentor_name:
+                    type: string
+                    description: The name of the mentor
+                  submission_id:
+                    type: string
+                    description: Activity's submission ID
+                  success_story:
+                    type: string
+                    description: Activity's success story
+      404:
+        description: No Mentors Checklists records found
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Not Found
+
+  /schedule:
+    post:
+      summary: Modify the trigger of an existing scheduled job.
+      description: |
+        This endpoint allows modifying the trigger of an existing scheduled job using a cron expression. 
+        If the job does not exist, it will return a not found error. If the cron expression is invalid, 
+        it will return a bad request error.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: expression
+          description: The Cron expression to modify job with
+          schema:
+            type: object
+            required:
+              - schedule
+            properties:
+              schedule:
+                type: string
+
+      responses:
+        200:
+          description: Job trigger modified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Job trigger modified successfully!
+        400:
+          description: Invalid cron expression or missing schedule key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid cron expression
+                  details:
+                    type: string
+                    example: "Invalid cron expression: Expected 5 fields, got 4"
+                  message:
+                    type: string
+                    example: Please specify a Cron expression under the 'schedule' key
+        404:
+          description: No jobs found with the given ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No Job[s] found
+                  detail:
+                    type: string
+                    example: No jobs currently scheduled
