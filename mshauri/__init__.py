@@ -12,6 +12,8 @@ from mshauri.extensions import db, migrate
 from mshauri.models import MentorsChecklist
 from mshauri.transformer import parser
 
+SOURCE = "./mshauri/dataset/data.xlsx"  # Path to the dataset
+
 
 def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
     """App factory
@@ -27,10 +29,8 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url.unicode_string()
     app.config["SECRET_KEY"] = configs.SECRET_KEY
 
-    source = "./mshauri/dataset/data.xlsx"  # Path to the dataset
-
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=task, args=[source, app], trigger="interval", seconds=300)
+    scheduler.add_job(func=task, args=[SOURCE, app], trigger="interval", seconds=300)
     scheduler.start()
 
     atexit.register(lambda: scheduler.shutdown(wait=True))
@@ -45,17 +45,14 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
             HTTPStatus.OK,
         )
 
-    @app.route("/run", methods=["GET"])
-    def process() -> tuple[dict, int]:
-        return {
-            "message": "Processed Successfully",
-        }, HTTPStatus.OK
-
-    @app.route("/checklist", methods=["GET"])
+    @app.route("/checklists", methods=["GET"])
     def get_checklists() -> tuple[dict, int]:
         checklists = MentorsChecklist.query.all()
 
-        return {"checklists": checklists}, HTTPStatus.OK
+        if checklists:
+            return {"checklists": checklists}, HTTPStatus.OK
+
+        return {"message": "Not Found"}, HTTPStatus.NOT_FOUND
 
     @app.after_request
     def set_headers(response):
@@ -93,11 +90,7 @@ def register_commands(app: Flask) -> None:
 
 
 def task(source: str, app: Flask) -> None:
-    """Task that performs the transformation
-
-    Returns:
-        pd.DataFrame: The resultant dataframe
-    """
+    """Task that performs the transformation"""
     with app.app_context():
         df = pd.read_excel(source)
         parser(df)

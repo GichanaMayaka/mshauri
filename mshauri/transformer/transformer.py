@@ -65,11 +65,13 @@ def process(
 
         cmes = row[cme_topics_cols_mask].dropna()
         for cme in cmes:
+            completion_date = row["mentor_checklist/cme_grp/cme_completion_date"]
             completion_date = (
-                datetime.now()
-                if pd.isna(row["mentor_checklist/cme_grp/cme_completion_date"])
-                else row["mentor_checklist/cme_grp/cme_completion_date"]
+                datetime.now() if pd.isna(completion_date) else completion_date
             )
+            success_story = row["mentor_checklist/success_grp/story_success"]
+            success_story = None if pd.isna(success_story) else success_story
+
             cme_detail = (
                 completion_date,
                 cme,
@@ -81,7 +83,7 @@ def process(
                 facility_code,
                 facility_name,
                 row["mentor_checklist/mentor/name"],  # Static Information
-                row["mentor_checklist/success_grp/story_success"],
+                success_story,
             )  # None for columns where the information isn't needed at this stage
             cme_topics_details[row._id].append(cme_detail)
 
@@ -90,11 +92,15 @@ def process(
 
         drills = row[drill_topics_cols_mask].dropna()
         for drill in drills:
+            drill_completion_date = row["mentor_checklist/cme_grp/cme_completion_date"]
             completion_date = (
                 datetime.now()
-                if pd.isna(row["mentor_checklist/cme_grp/cme_completion_date"])
-                else row["mentor_checklist/cme_grp/cme_completion_date"]
+                if pd.isna(drill_completion_date)
+                else drill_completion_date
             )
+            drill_success_story = row["mentor_checklist/success_grp/story_success"]
+            drill_success_story = None if pd.isna(success_story) else success_story
+
             drill_det = (
                 completion_date,
                 None,
@@ -106,7 +112,7 @@ def process(
                 facility_code,
                 facility_name,
                 row["mentor_checklist/mentor/name"],  # Static Information
-                row["mentor_checklist/success_grp/story_success"],
+                drill_success_story,
                 None,
             )  # None for columns where the information isn't needed at this stage
             drill_topics_details[row._id].append(drill_det)

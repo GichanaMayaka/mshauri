@@ -35,6 +35,7 @@ def test_process(test_dataframe):
                 "15808",
                 "Bokoli_Hospital",
                 "Dr Lex",
+                None,
             ),
             (
                 "2023-08-03",
@@ -47,6 +48,7 @@ def test_process(test_dataframe):
                 "15808",
                 "Bokoli_Hospital",
                 "Dr Lex",
+                None,
             ),
             (
                 "2023-08-03",
@@ -59,6 +61,7 @@ def test_process(test_dataframe):
                 "15808",
                 "Bokoli_Hospital",
                 "Dr Lex",
+                None,
             ),
             (
                 "2023-08-03",
@@ -71,6 +74,7 @@ def test_process(test_dataframe):
                 "15808",
                 "Bokoli_Hospital",
                 "Dr Lex",
+                None,
             ),
         ]
     }
@@ -90,6 +94,7 @@ def test_process(test_dataframe):
                 "Bokoli_Hospital",
                 "Dr Lex",
                 None,
+                None,
             ),
             (
                 "2023-08-03",
@@ -103,18 +108,6 @@ def test_process(test_dataframe):
                 "Bokoli_Hospital",
                 "Dr Lex",
                 None,
-            ),
-            (
-                "2023-08-03",
-                None,
-                "Bungoma",
-                "2023-08-10T15:01:24",
-                "Shoulder_dystocia_birth_of_a_non-vigorou",
-                None,
-                None,
-                "15808",
-                "Bokoli_Hospital",
-                "Dr Lex",
                 None,
             ),
             (
@@ -128,6 +121,21 @@ def test_process(test_dataframe):
                 "15808",
                 "Bokoli_Hospital",
                 "Dr Lex",
+                None,
+                None,
+            ),
+            (
+                "2023-08-03",
+                None,
+                "Bungoma",
+                "2023-08-10T15:01:24",
+                "Shoulder_dystocia_birth_of_a_non-vigorou",
+                None,
+                None,
+                "15808",
+                "Bokoli_Hospital",
+                "Dr Lex",
+                None,
                 None,
             ),
         ]
