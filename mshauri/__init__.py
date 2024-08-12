@@ -12,7 +12,7 @@ from pydantic import PostgresDsn
 from config import configs
 from mshauri.commands import create_db, drop_db, drop_tables
 from mshauri.extensions import db, migrate
-from mshauri.models import MentorsChecklist, CME, Drill
+from mshauri.models import MentorsChecklist
 from mshauri.transformer.transformer import parser
 
 SOURCE = "./mshauri/dataset/data.xlsx"  # Path to the dataset
@@ -80,8 +80,8 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
             job = scheduler.get_job("parse_dataset")
 
             if job:
-                job.modify(trigger=cron_trigger)
-                message = "Job trigger modified successfully!"
+                modified = job.modify(trigger=cron_trigger)
+                message = str(modified)
 
             else:
                 # If the job doesn't exist, add a new job
