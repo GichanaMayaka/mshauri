@@ -16,6 +16,8 @@ The application is deployed and hosted at [Render](https://mshauri.onrender.com/
 
 #### Modify the parser's execution trigger
 
+The app runs a background task on launch, that executes every minutes by default. This execution interval can be modified using the endpoint below.
+
 ```http
   POST /schedule
 ```
@@ -26,9 +28,7 @@ The application is deployed and hosted at [Render](https://mshauri.onrender.com/
 
 ## Environment Variables
 
-<a href="env"></a>
-
-To run this project, you will need to add the following environment variables as a .env file. An example .env file is provided for your reference (.env.example).
+To run this project, you will need to add the following environment variables as a .env file to the project root. An example .env file is provided for your reference (.env.example).
 
 `DEV_POSTGRES_DNS`: DNS for development Postgres DSN.
 
@@ -63,7 +63,7 @@ Once you have supplied the information required (as stipulated in the .env.examp
 
 You can run the application using the Flask CLI in tandem with Poetry - in development mode - in your local virtualenv/environment as follows:
 
-For Linux users
+For Linux users:
 
 ```bash
   export FLASK_APP=mshauri &&
@@ -81,7 +81,7 @@ or
   flask run --debug -p 8000
 ```
 
-For Windows Users (**Note**: These are separate commands, so please make sure to execute them accordingly.)
+For Windows Users:
 
 ```bash
   set FLASK_APP=mshauri
