@@ -12,8 +12,8 @@ from pydantic import PostgresDsn
 from config import configs
 from mshauri.commands import create_db, drop_db, drop_tables
 from mshauri.extensions import db, migrate
-from mshauri.models import MentorsChecklist, CME, Drill
-from mshauri.transformer.transformer import parser
+from mshauri.models import CME, Drill, MentorsChecklist
+from mshauri.transformer import parser
 
 SOURCE = "./mshauri/dataset/data.xlsx"  # Path to the dataset
 

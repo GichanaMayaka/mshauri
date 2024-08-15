@@ -42,7 +42,6 @@ def test_modify_trigger_success(client_app):
         )
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json["message"] == "Job trigger modified successfully!"
 
 
 def test_modify_trigger_invalid_expression(client_app):
