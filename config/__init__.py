@@ -1,6 +1,6 @@
 import os
 
-from pydantic import PostgresDsn, HttpUrl
+from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings
 
 

@@ -98,11 +98,11 @@ class MentorsChecklist(db.Model, CRUDMixin):
     success_story = db.Column(db.String(100), nullable=True)
 
     @property
-    def drill_topic(self):
+    def drill_topic(self) -> str | None:
         """Access relationship"""
         return self.drill and self.drill.name
 
     @property
-    def cme_topic(self):
+    def cme_topic(self) -> str | None:
         """Access relationship"""
         return self.cme and self.cme.name

@@ -32,7 +32,7 @@ def create_app(database_url: PostgresDsn = configs.POSTGRES_DSN) -> Flask:
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url.unicode_string()
     app.config["SECRET_KEY"] = configs.SECRET_KEY
 
-    swag = Swagger(app, template_file="./api-docs.yml")
+    Swagger(app, template_file="./api-docs.yml")
 
     register_extensions(app)
     register_commands(app)
