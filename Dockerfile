@@ -1,5 +1,5 @@
 # First stage: Builder
-FROM python:3.10.0-alpine AS builder
+FROM python:3.10.0-slim AS builder
 LABEL authors="Okeyo G. Mayaka"
 
 ARG ENV
@@ -28,7 +28,7 @@ RUN poetry config virtualenvs.create false \
 COPY . .
 
 # Second stage: Final
-FROM python:3.10.0
+FROM python:3.10.0-slim
 
 WORKDIR /mshauri
 
