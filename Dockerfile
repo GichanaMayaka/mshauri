@@ -1,8 +1,8 @@
-FROM python:3.10.0
+# First stage: Builder
+FROM python:3.10.0-alpine AS builder
 LABEL authors="Okeyo G. Mayaka"
 
 ARG ENV
-
 ENV ENV=${ENV} \
     PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -12,19 +12,30 @@ ENV ENV=${ENV} \
     PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.8.3
 
+WORKDIR /mshauri
+
 # System deps:
 RUN pip install "poetry==$POETRY_VERSION"
 
-WORKDIR /mshauri
-
-COPY poetry.lock pyproject.toml /mshauri/
+# Copy only dependency files first
+COPY poetry.lock pyproject.toml ./
 
 # Project initialization:
 RUN poetry config virtualenvs.create false \
     && poetry install $(test "$ENV" == prod && echo "--no-dev") --no-interaction --no-ansi
 
-# Creating folders, and files for project:
-COPY . /mshauri
+# Copy the rest of the application
+COPY . .
+
+# Second stage: Final
+FROM python:3.10.0
+
+WORKDIR /mshauri
+
+# Copy from builder stage
+COPY --from=builder /mshauri .
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 RUN chmod +x init.sh
 
